@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Common Thread Student Collective</title>
+<meta name="description" content="A nonprofit run by high school students, helping kids in foster care and residents of nursing homes.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: a stitched "thread" (dashed seam) runs through the page; impact numbers are sewn-on patches; one cobalt action color, marigold thread for highlights. */
+:root{
+  --paper:#F3F4EF;
+  --surface:#FFFFFF;
+  --ink:#151A2C;
+  --muted:#596074;
+  --line:#D9DBD2;
+  --cobalt:#2846C8;
+  --cobalt-ink:#FFFFFF;
+  --cobalt-soft:#E4E9FB;
+  --thread:#F0AE2A;
+  --thread-soft:#FCEFD2;
+  --good:#1F7A4D;
+  --display:"Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --body:"Public Sans", "Helvetica Neue", Arial, system-ui, sans-serif;
+  --radius:14px;
+  --shadow:0 1px 2px rgba(21,26,44,.06), 0 8px 24px rgba(21,26,44,.07);
+  --max:1160px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0F1220; --surface:#171B2E; --ink:#EEF0F6; --muted:#A3A9BB; --line:#2B3149;
+    --cobalt:#7F95FF; --cobalt-ink:#0F1220; --cobalt-soft:#1E2647;
+    --thread:#F5C25A; --thread-soft:#352C17; --good:#5CC892;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 28px rgba(0,0,0,.35);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0F1220; --surface:#171B2E; --ink:#EEF0F6; --muted:#A3A9BB; --line:#2B3149;
+  --cobalt:#7F95FF; --cobalt-ink:#0F1220; --cobalt-soft:#1E2647;
+  --thread:#F5C25A; --thread-soft:#352C17; --good:#5CC892;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 28px rgba(0,0,0,.35);
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6}
+img,svg{max-width:100%}
+a{color:var(--cobalt)}
+h1,h2,h3{font-family:var(--display);line-height:1.08;margin:0;text-wrap:balance;letter-spacing:-.015em}
+h2{font-size:clamp(30px,4.4vw,46px);font-weight:800}
+h3{font-size:21px;font-weight:700}
+p{margin:0}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 20px}
+section{padding:84px 0;scroll-margin-top:70px}
+.eyebrow{font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:10px}
+.eyebrow::before{content:"";width:28px;border-top:2px dashed var(--thread)}
+.lede{color:var(--muted);font-size:19px;max-width:62ch}
+.sec-head{display:grid;gap:14px;margin-bottom:40px;max-width:760px}
+:focus-visible{outline:3px solid var(--thread);outline-offset:3px;border-radius:6px}
+.num{font-variant-numeric:tabular-nums}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:600 16px/1 var(--body);padding:15px 22px;border-radius:999px;border:2px solid transparent;cursor:pointer;text-decoration:none;transition:transform .15s ease, background .15s ease, box-shadow .15s ease;white-space:nowrap}
+.btn:active{transform:translateY(1px)}
+.btn-primary{background:var(--cobalt);color:var(--cobalt-ink)}
+.btn-primary:hover{box-shadow:0 6px 18px color-mix(in srgb, var(--cobalt) 35%, transparent)}
+.btn-ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn-ghost:hover{border-color:var(--ink)}
+.btn-thread{background:var(--thread);color:#1A1407}
+
+/* Preview notice */
+.notice{background:var(--thread-soft);color:var(--ink);font-size:14px;padding:9px 0}
+.notice .wrap{display:flex;gap:12px;align-items:center;justify-content:space-between}
+.notice button{background:none;border:0;color:var(--ink);font:600 14px var(--body);cursor:pointer;padding:4px 8px;text-decoration:underline}
+
+/* Nav */
+header.nav{position:sticky;top:0;z-index:40;background:color-mix(in srgb, var(--paper) 88%, transparent);backdrop-filter:saturate(1.4) blur(12px);-webkit-backdrop-filter:saturate(1.4) blur(12px);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;height:66px;gap:16px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);font-family:var(--display);font-weight:800;font-size:19px;letter-spacing:-.01em}
+.brand small{display:block;font-family:var(--body);font-weight:500;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:2px}
+.links{display:flex;gap:6px;align-items:center}
+.links a{color:var(--ink);text-decoration:none;font-weight:500;font-size:15px;padding:8px 12px;border-radius:999px}
+.links a:hover{background:var(--surface)}
+.links .btn{padding:11px 18px;font-size:15px;margin-left:6px}
+.menu-btn{display:none;background:none;border:1px solid var(--line);border-radius:10px;padding:8px 10px;color:var(--ink);cursor:pointer}
+@media (max-width:860px){
+  .menu-btn{display:inline-flex}
+  .links{position:absolute;top:66px;left:0;right:0;flex-direction:column;align-items:stretch;background:var(--paper);border-bottom:1px solid var(--line);padding:10px 20px 18px;display:none}
+  .links.open{display:flex}
+  .links a{padding:12px 4px;border-radius:0;border-bottom:1px solid var(--line)}
+  .links .btn{margin:12px 0 0;border-bottom:0}
+}
+
+/* Hero */
+.hero{padding:64px 0 72px;position:relative;overflow:hidden}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,.9fr);gap:48px;align-items:center}
+.hero h1{font-size:clamp(40px,6.6vw,78px);font-weight:800;letter-spacing:-.03em;margin:18px 0 22px}
+.hero h1 .seam{position:relative;white-space:nowrap}
+.hero h1 .seam svg{position:absolute;left:0;bottom:-.14em;width:100%;height:.32em;overflow:visible}
+.seam path{fill:none;stroke:var(--thread);stroke-width:5;stroke-linecap:round;stroke-dasharray:14 10}
+.hero .lede{margin-bottom:30px}
+.cta-row{display:flex;flex-wrap:wrap;gap:12px}
+.trust{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:30px;color:var(--muted);font-size:14px}
+.trust span{display:flex;align-items:center;gap:7px}
+.trust svg{color:var(--good)}
+
+.drive{background:var(--surface);border-radius:22px;padding:26px;box-shadow:var(--shadow);position:relative}
+.drive::after{content:"";position:absolute;inset:9px;border:2px dashed var(--line);border-radius:15px;pointer-events:none}
+.drive > *{position:relative;z-index:1}
+.drive .tag{display:inline-flex;gap:6px;align-items:center;background:var(--thread-soft);color:var(--ink);font-size:12.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:6px 10px;border-radius:999px}
+.drive h3{font-size:26px;margin:14px 0 6px}
+.drive p{color:var(--muted);font-size:15.5px}
+.amount-big{font-family:var(--display);font-size:44px;font-weight:800;letter-spacing:-.02em;margin-top:18px}
+.amount-big small{font-family:var(--body);font-size:15px;font-weight:500;color:var(--muted);letter-spacing:0}
+.bar{height:14px;background:var(--cobalt-soft);border-radius:999px;overflow:hidden;margin:12px 0 10px}
+.bar i{display:block;height:100%;background:var(--cobalt);border-radius:999px;width:var(--w,0%);transition:width 1.2s cubic-bezier(.2,.8,.2,1)}
+.drive-meta{display:flex;justify-content:space-between;font-size:14px;color:var(--muted);margin-bottom:20px}
+.drive .btn{width:100%}
+
+@media (max-width:900px){.hero-grid{grid-template-columns:minmax(0,1fr)}.hero{padding-top:40px}}
+
+/* Patches (stats) */
+.patches{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.patch{background:var(--surface);border-radius:var(--radius);padding:24px 22px 22px;position:relative;box-shadow:var(--shadow)}
+.patch::before{content:"";position:absolute;inset:7px;border:2px dashed var(--line);border-radius:9px;pointer-events:none}
+.patch .n{font-family:var(--display);font-size:clamp(34px,4vw,46px);font-weight:800;letter-spacing:-.025em;line-height:1}
+.patch .l{margin-top:10px;font-weight:600}
+.patch .d{color:var(--muted);font-size:14.5px;margin-top:4px}
+.patch.accent{background:var(--cobalt);color:var(--cobalt-ink)}
+.patch.accent::before{border-color:color-mix(in srgb, var(--cobalt-ink) 40%, transparent)}
+.patch.accent .d{color:color-mix(in srgb, var(--cobalt-ink) 78%, transparent)}
+@media (max-width:900px){.patches{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:420px){.patches{grid-template-columns:1fr}}
+.stats-band{padding:0 0 84px}
+
+/* Mission */
+.mission{background:var(--surface);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.mission-grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
+.mission blockquote{margin:0;font-family:var(--display);font-size:clamp(26px,3.2vw,36px);font-weight:700;line-height:1.2;letter-spacing:-.015em}
+.mission blockquote em{font-style:normal;background:linear-gradient(transparent 62%, var(--thread-soft) 62%)}
+.mission .body{display:grid;gap:16px;color:var(--muted)}
+.mission .body strong{color:var(--ink)}
+.pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:48px}
+.pillar{border-top:2px dashed var(--thread);padding-top:16px}
+.pillar h3{font-size:18px;margin-bottom:6px}
+.pillar p{color:var(--muted);font-size:15.5px}
+@media (max-width:860px){.mission-grid,.pillars{grid-template-columns:1fr;gap:28px}}
+
+/* Programs tabs */
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:26px}
+.tab{font:600 15px var(--body);padding:11px 18px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.panel{display:grid;grid-template-columns:.95fr 1.05fr;gap:28px;background:var(--surface);border-radius:22px;padding:30px;box-shadow:var(--shadow)}
+.panel[hidden]{display:none}
+.panel .intro h3{font-size:30px;margin-bottom:12px}
+.panel .intro p{color:var(--muted)}
+.panel .intro .mini{display:flex;gap:28px;margin-top:24px;flex-wrap:wrap}
+.panel .intro .mini div{font-family:var(--display);font-size:32px;font-weight:800;line-height:1}
+.panel .intro .mini span{display:block;font-family:var(--body);font-size:13.5px;font-weight:500;color:var(--muted);margin-top:6px}
+.items{display:grid;gap:12px}
+.item{display:grid;grid-template-columns:44px 1fr;gap:14px;padding:16px;border-radius:12px;background:var(--paper);align-items:start}
+.item .ic{width:44px;height:44px;border-radius:12px;background:var(--cobalt-soft);color:var(--cobalt);display:grid;place-items:center}
+.item h4{margin:0 0 3px;font-size:16.5px}
+.item p{color:var(--muted);font-size:15px}
+@media (max-width:860px){.panel{grid-template-columns:1fr;padding:22px}}
+
+/* Money */
+.money-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:20px}
+.card{background:var(--surface);border-radius:var(--radius);padding:26px;box-shadow:var(--shadow)}
+.card h3{font-size:19px}
+.card .sub{color:var(--muted);font-size:14.5px;margin-top:4px}
+.chart{position:relative;margin-top:18px}
+.chart svg{display:block;width:100%;height:auto}
+.chart .grid line{stroke:var(--line);stroke-width:1}
+.chart .axis text,.chart .val{fill:var(--muted);font:500 12.5px var(--body)}
+.chart .val{fill:var(--ink);font-weight:700;font-size:13px}
+.chart .b{fill:var(--cobalt);transition:opacity .15s}
+.chart .b.partial{fill:url(#hatch)}
+.chart .hit{fill:transparent;cursor:pointer}
+.chart.hovering .b{opacity:.45}
+.chart.hovering .b.on{opacity:1}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--paper);font-size:13px;line-height:1.4;padding:8px 11px;border-radius:9px;transform:translate(-50%,-100%);white-space:nowrap;opacity:0;transition:opacity .12s}
+.tip.show{opacity:1}
+.tip b{font-variant-numeric:tabular-nums}
+.chart-note{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-top:10px}
+.chart-note span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:12px;height:12px;border-radius:3px;background:var(--cobalt);display:inline-block}
+.sw.h{background:repeating-linear-gradient(45deg,var(--cobalt) 0 2px,var(--cobalt-soft) 2px 5px)}
+.uses{list-style:none;padding:0;margin:20px 0 0;display:grid;gap:14px}
+.uses li{display:grid;gap:6px}
+.uses .row{display:flex;justify-content:space-between;gap:12px;font-size:15px}
+.uses .row b{font-variant-numeric:tabular-nums}
+.uses .track{height:10px;border-radius:999px;background:var(--cobalt-soft);overflow:hidden}
+.uses .track i{display:block;height:100%;border-radius:999px;background:var(--cobalt);width:var(--w)}
+.uses .row span{color:var(--muted);font-size:13.5px}
+.money-foot{margin-top:18px;padding-top:16px;border-top:1px dashed var(--line);font-size:14px;color:var(--muted);display:flex;gap:10px;align-items:flex-start}
+.toggle-table{margin-top:14px;background:none;border:0;color:var(--cobalt);font:600 14px var(--body);cursor:pointer;padding:4px 0;text-decoration:underline;text-underline-offset:3px}
+table.data{width:100%;border-collapse:collapse;margin-top:10px;font-size:14.5px}
+table.data th,table.data td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line)}
+table.data td:last-child,table.data th:last-child{text-align:right;font-variant-numeric:tabular-nums}
+@media (max-width:900px){.money-grid{grid-template-columns:minmax(0,1fr)}}
+
+/* Timeline */
+.timeline{position:relative;display:grid;gap:0;margin-top:8px}
+.tl-filter{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
+.chip{font:600 14px var(--body);padding:8px 14px;border-radius:999px;border:1.5px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--thread);border-color:var(--thread);color:#1A1407}
+.ev{display:grid;grid-template-columns:120px 28px 1fr;gap:0 16px;align-items:start}
+.ev[hidden]{display:none}
+.ev .when{font-weight:700;font-size:14px;color:var(--muted);text-align:right;padding-top:18px;font-variant-numeric:tabular-nums}
+.ev .rail{position:relative;align-self:stretch;display:flex;justify-content:center}
+.ev .rail::before{content:"";position:absolute;top:0;bottom:0;border-left:2px dashed var(--line)}
+.ev .rail i{position:relative;margin-top:20px;width:16px;height:16px;border-radius:50%;background:var(--surface);border:4px solid var(--cobalt)}
+.ev.foster .rail i{border-color:var(--cobalt)}
+.ev.elder .rail i{border-color:var(--thread)}
+.ev.org .rail i{border-color:var(--ink)}
+.ev .what{background:var(--surface);border-radius:12px;padding:16px 18px;margin:8px 0;box-shadow:var(--shadow)}
+.ev .what h4{margin:0 0 4px;font-size:17px;font-family:var(--display)}
+.ev .what p{color:var(--muted);font-size:15px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13.5px;color:var(--muted);margin-bottom:18px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:12px;height:12px;border-radius:50%;border:3px solid var(--cobalt);display:inline-block}
+@media (max-width:600px){.ev{grid-template-columns:22px 1fr;gap:0 12px}.ev .when{grid-column:2;text-align:left;padding-top:14px;order:-1}.ev .rail{grid-row:1 / span 2;grid-column:1}.ev .what{grid-column:2;margin-top:4px}}
+
+/* Donate */
+.donate{background:var(--ink);color:var(--paper)}
+.donate .eyebrow{color:color-mix(in srgb, var(--paper) 70%, transparent)}
+.donate .lede{color:color-mix(in srgb, var(--paper) 75%, transparent)}
+.donate-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start}
+.give{background:var(--surface);color:var(--ink);border-radius:22px;padding:28px;box-shadow:0 20px 50px rgba(0,0,0,.25)}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--paper);border-radius:999px;padding:4px;margin-bottom:20px}
+.seg button{font:600 15px var(--body);border:0;background:transparent;color:var(--muted);padding:11px;border-radius:999px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.amts{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.amt{font:700 18px var(--display);padding:16px 6px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;font-variant-numeric:tabular-nums}
+.amt[aria-pressed="true"]{border-color:var(--cobalt);background:var(--cobalt-soft);color:var(--ink);box-shadow:inset 0 0 0 1px var(--cobalt)}
+.custom{display:flex;align-items:center;gap:8px;margin-top:10px;border:1.5px solid var(--line);border-radius:12px;padding:0 14px;background:var(--surface)}
+.custom:focus-within{border-color:var(--cobalt)}
+.custom span{font-weight:700;color:var(--muted)}
+.custom input{flex:1;border:0;background:transparent;font:600 17px var(--body);color:var(--ink);padding:14px 0;outline:none;min-width:0}
+.custom label{font-size:14px;color:var(--muted);white-space:nowrap}
+.impact{margin:20px 0;padding:18px;border-radius:14px;background:var(--thread-soft);display:grid;gap:4px}
+.impact .big{font-family:var(--display);font-weight:700;font-size:20px;line-height:1.25}
+.impact .small{font-size:14px;color:var(--muted)}
+.dedicate{display:flex;align-items:center;gap:10px;font-size:15px;margin-bottom:16px;cursor:pointer}
+.dedicate input{width:18px;height:18px;accent-color:var(--cobalt)}
+.give .btn{width:100%;font-size:17px;padding:17px}
+.secure{display:flex;justify-content:center;gap:6px;align-items:center;font-size:13px;color:var(--muted);margin-top:12px}
+.menu-list{display:grid;gap:12px;margin-top:30px}
+.menu-list div{display:grid;grid-template-columns:72px 1fr;gap:14px;align-items:baseline;padding:14px 0;border-top:1px dashed color-mix(in srgb, var(--paper) 25%, transparent)}
+.menu-list b{font-family:var(--display);font-size:24px;color:var(--thread);font-variant-numeric:tabular-nums}
+.menu-list span{color:color-mix(in srgb, var(--paper) 82%, transparent);font-size:15.5px}
+.other-ways{margin-top:26px;font-size:15px;color:color-mix(in srgb, var(--paper) 75%, transparent)}
+.other-ways a{color:var(--thread)}
+.other-ways,.foot{overflow-wrap:anywhere}
+@media (max-width:900px){.donate-grid{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:420px){.amts{grid-template-columns:repeat(2,1fr)}}
+
+/* Join */
+.join-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:40px;align-items:start}
+.ways{display:grid;gap:12px;margin-top:26px}
+.way{display:flex;gap:14px;align-items:flex-start}
+.way b{flex:none;width:30px;height:30px;border-radius:50%;background:var(--thread);color:#1A1407;display:grid;place-items:center;font-family:var(--display);font-size:15px}
+.way p{color:var(--muted);font-size:15.5px}
+.way strong{color:var(--ink);display:block}
+form.signup{background:var(--surface);border-radius:22px;padding:28px;box-shadow:var(--shadow);display:grid;gap:16px}
+.field{display:grid;gap:6px}
+.field label{font-weight:600;font-size:14.5px}
+.field input,.field select,.field textarea{font:16px var(--body);color:var(--ink);background:var(--paper);border:1.5px solid var(--line);border-radius:10px;padding:13px 14px;width:100%}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--cobalt)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.checks{display:flex;flex-wrap:wrap;gap:8px}
+.checks label{display:inline-flex;gap:8px;align-items:center;padding:9px 13px;border:1.5px solid var(--line);border-radius:999px;font-size:14.5px;cursor:pointer;font-weight:500}
+.checks input{accent-color:var(--cobalt)}
+.checks label:has(input:checked){border-color:var(--cobalt);background:var(--cobalt-soft)}
+.form-msg{display:none;padding:14px 16px;border-radius:12px;background:var(--cobalt-soft);font-size:15px}
+.form-msg.show{display:block}
+.err{color:#C0362C;font-size:13.5px;display:none}
+.field.bad .err{display:block}
+.field.bad input{border-color:#C0362C}
+@media (max-width:860px){.join-grid{grid-template-columns:minmax(0,1fr)}.two{grid-template-columns:1fr}}
+
+/* FAQ */
+.faq{max-width:820px}
+details{border-bottom:1px solid var(--line);padding:4px 0}
+summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;gap:16px;align-items:center;padding:18px 0;font-family:var(--display);font-weight:700;font-size:19px}
+summary::-webkit-details-marker{display:none}
+summary .pm{flex:none;width:30px;height:30px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;transition:transform .2s}
+details[open] summary .pm{transform:rotate(45deg);background:var(--thread);border-color:var(--thread);color:#1A1407}
+details p{color:var(--muted);padding:0 0 20px;max-width:68ch}
+
+/* Footer */
+footer{border-top:1px solid var(--line);padding:48px 0 36px;font-size:14.5px;color:var(--muted)}
+.foot{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:28px}
+.foot h4{color:var(--ink);font-size:14px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 10px}
+.foot a{color:var(--muted);text-decoration:none;display:block;padding:3px 0}
+.foot a:hover{color:var(--ink)}
+.fine{margin-top:32px;padding-top:20px;border-top:1px dashed var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:13px}
+@media (max-width:760px){.foot{grid-template-columns:1fr}}
+
+/* Sticky mobile donate */
+.mobile-give{position:fixed;left:12px;right:12px;bottom:12px;z-index:30;display:none}
+@media (max-width:700px){.mobile-give{display:block}.mobile-give .btn{width:100%;box-shadow:0 10px 30px rgba(0,0,0,.25)}body{padding-bottom:76px}}
+.mobile-give.hide{display:none}
+
+/* Dialog */
+.modal{position:fixed;inset:0;background:rgba(10,12,22,.55);display:none;align-items:center;justify-content:center;padding:20px;z-index:60}
+.modal.open{display:flex}
+.modal-box{background:var(--surface);color:var(--ink);border-radius:20px;max-width:440px;width:100%;padding:28px;box-shadow:0 30px 60px rgba(0,0,0,.35);display:grid;gap:14px}
+.modal-box h3{font-size:24px}
+.modal-box p{color:var(--muted);font-size:15.5px}
+.summary{background:var(--paper);border-radius:12px;padding:14px 16px;display:grid;gap:6px;font-size:15px}
+.summary div{display:flex;justify-content:space-between}
+.summary b{font-variant-numeric:tabular-nums}
+
+/* Load reveal */
+@keyframes rise{from{transform:translateY(14px);opacity:.001}to{transform:none;opacity:1}}
+@keyframes stitch{from{stroke-dashoffset:240}to{stroke-dashoffset:0}}
+.hero .rise{animation:rise .7s cubic-bezier(.2,.8,.2,1) both}
+.hero .rise:nth-child(2){animation-delay:.06s}.hero .rise:nth-child(3){animation-delay:.12s}.hero .rise:nth-child(4){animation-delay:.18s}.hero .rise:nth-child(5){animation-delay:.24s}
+.seam path{animation:stitch 1.6s .3s ease-out both}
+</style>
+</head>
+<body>
+
+<div class="notice" id="notice" role="note">
+  <div class="wrap">
+    <span><strong>Preview:</strong> the name, school, contact details and figures on this page are placeholders. Swap in your own before sharing.</span>
+    <button type="button" id="closeNotice" aria-label="Hide preview notice">Hide</button>
+  </div>
+</div>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="Common Thread, home">
+      <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><circle cx="17" cy="17" r="15" fill="none" stroke="var(--cobalt)" stroke-width="3"/><path d="M7 20c4-8 9 2 13-5s6-3 7 0" fill="none" stroke="var(--thread)" stroke-width="3" stroke-linecap="round" stroke-dasharray="4 3.5"/></svg>
+      <span>Common Thread<small>Student Collective</small></span>
+    </a>
+    <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="links" aria-label="Open menu">
+      <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <nav class="links" id="links" aria-label="Main">
+      <a href="#mission">Mission</a>
+      <a href="#programs">Programs</a>
+      <a href="#impact">Our numbers</a>
+      <a href="#milestones">Milestones</a>
+      <a href="#join">Volunteer</a>
+      <a class="btn btn-primary" href="#donate">Donate</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow rise">Student-run nonprofit · Since 2023</div>
+      <h1 class="rise">Teenagers showing up for kids in foster care and our nursing-home <span class="seam">neighbors<svg viewBox="0 0 300 20" preserveAspectRatio="none" aria-hidden="true"><path d="M2 12 C 60 2, 120 20, 180 9 S 270 4, 298 11" pathLength="240"/></svg></span>.</h1>
+      <p class="lede rise">Common Thread is a group of 47 high school students who raise money, pack care kits, and spend Saturdays with seniors. Every dollar goes to people in our county who need it.</p>
+      <div class="cta-row rise">
+        <a class="btn btn-primary" href="#donate">Donate now
+          <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <a class="btn btn-ghost" href="#join">Join as a volunteer</a>
+      </div>
+      <div class="trust rise">
+        <span><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>100% student-led</span>
+        <span><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Open books, published every semester</span>
+        <span><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Faculty advisor oversight</span>
+      </div>
+    </div>
+
+    <aside class="drive rise" aria-labelledby="driveTitle">
+      <span class="tag">
+        <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="5" fill="currentColor"/></svg>
+        Live now · ends Dec 18
+      </span>
+      <h3 id="driveTitle">Holiday Gift Drive 2026</h3>
+      <p>A wrapped gift and a warm blanket for every child in our partner foster homes, plus a holiday party at three nursing homes.</p>
+      <div class="amount-big num"><span id="driveRaised">$1,310</span> <small>raised of $3,000</small></div>
+      <div class="bar" role="progressbar" aria-label="Holiday drive progress" aria-valuemin="0" aria-valuemax="3000" aria-valuenow="1310"><i id="driveBar" style="--w:44%"></i></div>
+      <div class="drive-meta num"><span>44% funded · 63 donors</span><span>35 days left</span></div>
+      <a class="btn btn-thread" href="#donate" data-fund="holiday">Give to the drive</a>
+    </aside>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-band">
+  <div class="wrap patches" aria-label="Impact so far">
+    <div class="patch accent">
+      <div class="n num" data-count="14860" data-prefix="$">$14,860</div>
+      <div class="l">Raised since 2023</div>
+      <div class="d">From bake sales, car washes, a 5K and community donors</div>
+    </div>
+    <div class="patch">
+      <div class="n num" data-count="612">612</div>
+      <div class="l">Comfort kits delivered</div>
+      <div class="d">For kids entering foster care with little or nothing</div>
+    </div>
+    <div class="patch">
+      <div class="n num" data-count="38">38</div>
+      <div class="l">Nursing-home visits</div>
+      <div class="d">Game afternoons, music and conversation at 6 facilities</div>
+    </div>
+    <div class="patch">
+      <div class="n num" data-count="2340">2,340</div>
+      <div class="l">Volunteer hours</div>
+      <div class="d">Logged by student members and verified by our advisor</div>
+    </div>
+  </div>
+</div>
+
+<!-- MISSION -->
+<section class="mission" id="mission">
+  <div class="wrap">
+    <div class="mission-grid">
+      <div>
+        <div class="eyebrow" style="margin-bottom:18px">Our mission</div>
+        <blockquote>We connect the youngest and oldest people in our community who are too often <em>left on their own</em>, and we do it with our own hands.</blockquote>
+      </div>
+      <div class="body">
+        <p>Common Thread started in September 2023 when five students at <strong>Westbrook High School</strong> noticed two things in the same week: a foster agency asking for duffel bags because kids were moving homes with trash bags, and a nursing home asking for visitors because many residents had none.</p>
+        <p>We decided to help both. Today our members run monthly drives, build care kits by hand, and visit seniors every month. We publish where every dollar goes, and our faculty advisor signs off on all spending.</p>
+      </div>
+    </div>
+    <div class="pillars">
+      <div class="pillar"><h3>Show up in person</h3><p>Money matters, but so does a familiar face. Every program includes time spent with the people we serve.</p></div>
+      <div class="pillar"><h3>Stay local</h3><p>Every kit, gift and visit stays within our county, through partners we know by name.</p></div>
+      <div class="pillar"><h3>Keep open books</h3><p>We share what we raise and what we spend, every semester, down to the dollar.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- PROGRAMS -->
+<section id="programs">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">What we do</div>
+      <h2>Three programs, one community</h2>
+      <p class="lede">Choose a program to see what our members do each month and what we've delivered so far.</p>
+    </div>
+
+    <div class="tabs" role="tablist" aria-label="Programs">
+      <button class="tab" role="tab" id="tab-foster" aria-controls="p-foster" aria-selected="true">Kids in foster care</button>
+      <button class="tab" role="tab" id="tab-elder" aria-controls="p-elder" aria-selected="false" tabindex="-1">Nursing homes</button>
+      <button class="tab" role="tab" id="tab-fund" aria-controls="p-fund" aria-selected="false" tabindex="-1">Fundraising events</button>
+    </div>
+
+    <div class="panel" role="tabpanel" id="p-foster" aria-labelledby="tab-foster">
+      <div class="intro">
+        <h3>Something of their own</h3>
+        <p>When a child enters foster care, they often arrive with only the clothes they're wearing. We work with our county's child welfare office and two foster family networks to make sure every child gets something that belongs to them.</p>
+        <div class="mini"><div class="num">612<span>comfort kits</span></div><div class="num">340<span>backpacks</span></div><div class="num">285<span>holiday gifts</span></div></div>
+      </div>
+      <div class="items">
+        <div class="item"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h16v11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1zM9 8V6a3 3 0 0 1 6 0v2" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round"/></svg></div><div><h4>Comfort kits</h4><p>A duffel bag with a blanket, toiletries, pajamas, a journal and a handwritten note. About $15 each.</p></div></div>
+        <div class="item"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V7l8-4 8 4v12M9 19v-6h6v6" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round"/></svg></div><div><h4>Back-to-school backpacks</h4><p>Filled with grade-specific supplies every August so no one starts the year behind.</p></div></div>
+        <div class="item"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10h16v10H4zM2 7h20v3H2zM12 7v13M12 7c-2-4-6-3-5 0M12 7c2-4 6-3 5 0" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round"/></svg></div><div><h4>Holiday and birthday gifts</h4><p>Caseworkers share wish lists (first names only), and our members shop for and wrap every gift.</p></div></div>
+      </div>
+    </div>
+
+    <div class="panel" role="tabpanel" id="p-elder" aria-labelledby="tab-elder" hidden>
+      <div class="intro">
+        <h3>Nobody should go a month without a visitor</h3>
+        <p>Many nursing-home residents rarely get visitors. Our members spend Saturday afternoons playing games, making music, helping with video calls to family, and simply talking.</p>
+        <div class="mini"><div class="num">38<span>visits</span></div><div class="num">6<span>facilities</span></div><div class="num">1,450<span>cards made</span></div></div>
+      </div>
+      <div class="items">
+        <div class="item"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="9" r="3" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="16" cy="9" r="3" stroke="currentColor" stroke-width="2" fill="none"/><path d="M2 20c0-3 3-5 6-5s6 2 6 5M12 20c0-3 2-5 5-5s5 2 5 5" stroke="currentColor" stroke-width="2" fill="none"/></svg></div><div><h4>Monthly visit days</h4><p>Bingo, card games, puzzles and live music from student musicians, followed by time to just talk.</p></div></div>
+        <div class="item"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18v12H3zM3 7l9 6 9-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round"/></svg></div><div><h4>Pen Pals Across Generations</h4><p>Students and residents trade letters every two weeks. Our newest program, launched October 2026.</p></div></div>
+        <div class="item"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round"/></svg></div><div><h4>Holiday card and comfort drives</h4><p>Handmade cards for every holiday, plus fleece blankets and large-print puzzle books.</p></div></div>
+      </div>
+    </div>
+
+    <div class="panel" role="tabpanel" id="p-fund" aria-labelledby="tab-fund" hidden>
+      <div class="intro">
+        <h3>How students raise the money</h3>
+        <p>Most of what we raise comes from events our members plan and run themselves, with help from local businesses that donate supplies or match what we raise.</p>
+        <div class="mini"><div class="num">24<span>events run</span></div><div class="num">9<span>local sponsors</span></div><div class="num">$620<span>avg. per event</span></div></div>
+      </div>
+      <div class="items">
+        <div class="item"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 14h16l-2 6H6zM7 14V9a5 5 0 0 1 10 0v5" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round"/></svg></div><div><h4>Bake sales and car washes</h4><p>Our most reliable fundraisers, held at school games and the Saturday farmers market.</p></div></div>
+        <div class="item"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle cx="13" cy="4" r="2" stroke="currentColor" stroke-width="2" fill="none"/><path d="M7 21l3-6 3 2v4M10 15l1-6 4 3 3 1M6 11l5-2" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div><h4>Common Thread 5K</h4><p>Our annual spring run. The 2026 race had 180 runners and raised $3,200.</p></div></div>
+        <div class="item"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18M5 21V10l7-5 7 5v11M10 21v-5h4v5" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round"/></svg></div><div><h4>Business partners</h4><p>Restaurant give-back nights and local businesses that match donations during our drives.</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MONEY -->
+<section id="impact" style="background:var(--surface);border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">Open books</div>
+      <h2>What we've raised and where it went</h2>
+      <p class="lede">Since 2023 we've raised $14,860. Here's every school year, and how each dollar has been spent.</p>
+    </div>
+
+    <div class="money-grid">
+      <div class="card" style="background:var(--paper);box-shadow:none;border:1px solid var(--line)">
+        <h3>Money raised by school year</h3>
+        <p class="sub">Tap or hover a bar for details</p>
+        <div class="chart" id="chart">
+          <div class="tip" id="tip"></div>
+        </div>
+        <div class="chart-note"><span><i class="sw"></i>Full school year</span><span><i class="sw h"></i>2026–27 so far (through Nov 13)</span></div>
+        <button class="toggle-table" type="button" id="tableBtn" aria-expanded="false" aria-controls="dataTable">Show as table</button>
+        <table class="data" id="dataTable" hidden>
+          <thead><tr><th scope="col">School year</th><th scope="col">Events</th><th scope="col">Raised</th></tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+
+      <div class="card" style="background:var(--paper);box-shadow:none;border:1px solid var(--line)">
+        <h3>Where every dollar goes</h3>
+        <p class="sub">Spending since 2023, approved by our faculty advisor</p>
+        <ul class="uses" id="uses"></ul>
+        <div class="money-foot">
+          <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" style="flex:none;margin-top:2px;color:var(--good)"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round"/></svg>
+          <span>Members are all volunteers. No one is paid, and supplies for events are mostly donated.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MILESTONES -->
+<section id="milestones">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">Milestones</div>
+      <h2>Three years, one stitch at a time</h2>
+      <p class="lede">From five friends at a lunch table to 47 members across two schools.</p>
+    </div>
+
+    <div class="tl-filter" role="group" aria-label="Filter milestones">
+      <button class="chip" type="button" data-f="all" aria-pressed="true">All</button>
+      <button class="chip" type="button" data-f="foster" aria-pressed="false">Foster care</button>
+      <button class="chip" type="button" data-f="elder" aria-pressed="false">Nursing homes</button>
+      <button class="chip" type="button" data-f="org" aria-pressed="false">Organization</button>
+    </div>
+    <div class="legend" aria-hidden="true">
+      <span><i></i>Foster care</span>
+      <span><i style="border-color:var(--thread)"></i>Nursing homes</span>
+      <span><i style="border-color:var(--ink)"></i>Organization</span>
+    </div>
+
+    <div class="timeline" id="timeline">
+      <div class="ev org"><div class="when">Sep 2023</div><div class="rail"><i></i></div><div class="what"><h4>Common Thread is founded</h4><p>Five Westbrook High students start the club with a $200 bake sale and a borrowed classroom.</p></div></div>
+      <div class="ev foster"><div class="when">Dec 2023</div><div class="rail"><i></i></div><div class="what"><h4>First holiday drive</h4><p>120 gift bags delivered to kids in foster care through the county office.</p></div></div>
+      <div class="ev elder"><div class="when">Mar 2024</div><div class="rail"><i></i></div><div class="what"><h4>Monthly visits begin</h4><p>Our first Saturday visit day at Maple Grove Senior Living. We haven't missed a month since.</p></div></div>
+      <div class="ev foster"><div class="when">Aug 2024</div><div class="rail"><i></i></div><div class="what"><h4>200 backpacks for back-to-school</h4><p>Our biggest drive yet, packed in one afternoon by 30 volunteers.</p></div></div>
+      <div class="ev elder"><div class="when">Feb 2025</div><div class="rail"><i></i></div><div class="what"><h4>900 Valentine's cards</h4><p>Handmade cards delivered to residents at six nursing homes across the county.</p></div></div>
+      <div class="ev org"><div class="when">Apr 2025</div><div class="rail"><i></i></div><div class="what"><h4>First Common Thread 5K</h4><p>110 runners and $2,400 raised. Recognized with the district's Student Service Award.</p></div></div>
+      <div class="ev org"><div class="when">May 2026</div><div class="rail"><i></i></div><div class="what"><h4>$10,000 raised</h4><p>We passed five figures and opened a second chapter at Lincoln High.</p></div></div>
+      <div class="ev elder"><div class="when">Oct 2026</div><div class="rail"><i></i></div><div class="what"><h4>Pen Pals Across Generations</h4><p>42 students matched with residents for letters every two weeks.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- DONATE -->
+<section class="donate" id="donate">
+  <div class="wrap donate-grid">
+    <div>
+      <div class="eyebrow">Donate</div>
+      <h2 style="margin:16px 0 18px">Your gift goes straight to a kid or a senior in our county</h2>
+      <p class="lede">We have no paid staff and almost no overhead. Pick an amount and see exactly what it covers.</p>
+      <div class="menu-list" aria-label="What gifts provide">
+        <div><b>$15</b><span>One comfort kit for a child entering foster care</span></div>
+        <div><b>$25</b><span>A backpack full of school supplies</span></div>
+        <div><b>$40</b><span>Supplies and snacks for one nursing-home visit day</span></div>
+        <div><b>$100</b><span>Holiday gifts and blankets for four kids</span></div>
+      </div>
+      <p class="other-ways">Prefer to give items or sponsor an event? Email <a href="mailto:hello@commonthreadstudents.org">hello@commonthreadstudents.org</a> (hello@commonthreadstudents.org).</p>
+    </div>
+
+    <form class="give" id="giveForm" novalidate aria-labelledby="giveTitle">
+      <h3 id="giveTitle" style="font-size:22px;margin-bottom:16px">Make a gift</h3>
+      <div class="seg" role="group" aria-label="Gift frequency">
+        <button type="button" id="freqOnce" aria-pressed="true" data-freq="once">One time</button>
+        <button type="button" id="freqMonthly" aria-pressed="false" data-freq="monthly">Monthly</button>
+      </div>
+      <div class="field" style="margin-bottom:16px">
+        <label for="fund">Direct my gift to</label>
+        <select id="fund">
+          <option value="general">Where it's needed most</option>
+          <option value="holiday">Holiday Gift Drive 2026</option>
+          <option value="foster">Kids in foster care</option>
+          <option value="elder">Nursing-home visits</option>
+        </select>
+      </div>
+      <div class="amts" role="group" aria-label="Gift amount">
+        <button type="button" class="amt" data-amt="15" aria-pressed="false">$15</button>
+        <button type="button" class="amt" data-amt="25" aria-pressed="false">$25</button>
+        <button type="button" class="amt" data-amt="50" aria-pressed="true">$50</button>
+        <button type="button" class="amt" data-amt="100" aria-pressed="false">$100</button>
+      </div>
+      <div class="custom">
+        <span aria-hidden="true">$</span>
+        <input id="customAmt" type="number" inputmode="decimal" min="1" step="1" placeholder="Other amount" aria-label="Other amount in dollars">
+        <label for="customAmt" id="freqLabel">one time</label>
+      </div>
+
+      <div class="impact" aria-live="polite">
+        <div class="big" id="impactBig">$50 provides 3 comfort kits for kids entering foster care.</div>
+        <div class="small" id="impactSmall">Every kit includes a duffel bag, blanket, pajamas and a handwritten note.</div>
+      </div>
+
+      <label class="dedicate"><input type="checkbox" id="honor"> Give in honor of someone</label>
+      <div class="field" id="honorField" hidden style="margin-bottom:16px">
+        <label for="honorName">Honoree's name</label>
+        <input id="honorName" type="text" autocomplete="off" placeholder="e.g. Grandma Rose">
+      </div>
+
+      <button type="submit" class="btn btn-primary" id="giveBtn">Donate $50</button>
+      <div class="secure">
+        <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="2" stroke="currentColor" stroke-width="2" fill="none"/><path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+        You'll finish on a secure checkout page
+      </div>
+    </form>
+  </div>
+</section>
+
+<!-- JOIN -->
+<section id="join">
+  <div class="wrap join-grid">
+    <div>
+      <div class="eyebrow">Get involved</div>
+      <h2 style="margin:16px 0 18px">Lend a hand this semester</h2>
+      <p class="lede">Students earn verified service hours. Parents, teachers and local businesses can help too.</p>
+      <div class="ways">
+        <div class="way"><b>1</b><p><strong>Sign up below</strong>Tell us what you'd like to help with. It takes a minute.</p></div>
+        <div class="way"><b>2</b><p><strong>Come to a meeting</strong>We meet Tuesdays at 3:15 in Room 204 at Westbrook High.</p></div>
+        <div class="way"><b>3</b><p><strong>Pick your first event</strong>Pack kits, visit seniors, or help run a fundraiser.</p></div>
+      </div>
+    </div>
+
+    <form class="signup" id="signup" novalidate>
+      <div class="two">
+        <div class="field" id="f-name"><label for="sName">Full name</label><input id="sName" name="name" autocomplete="name" required><span class="err">Please enter your name.</span></div>
+        <div class="field" id="f-email"><label for="sEmail">Email</label><input id="sEmail" name="email" type="email" autocomplete="email" required><span class="err">Please enter a valid email, like name@example.com.</span></div>
+      </div>
+      <div class="field">
+        <label for="sRole">I am a…</label>
+        <select id="sRole" name="role">
+          <option>High school student</option>
+          <option>Parent or guardian</option>
+          <option>Teacher or school staff</option>
+          <option>Local business</option>
+          <option>Community member</option>
+        </select>
+      </div>
+      <fieldset class="field" style="border:0;padding:0;margin:0">
+        <legend style="font-weight:600;font-size:14.5px;margin-bottom:6px">I'd like to help with</legend>
+        <div class="checks">
+          <label><input type="checkbox" id="iKits" name="interest" value="Care kits"> Care kits</label>
+          <label><input type="checkbox" id="iVisits" name="interest" value="Nursing-home visits"> Nursing-home visits</label>
+          <label><input type="checkbox" id="iEvents" name="interest" value="Fundraising events"> Fundraising events</label>
+          <label><input type="checkbox" id="iSponsor" name="interest" value="Sponsoring"> Sponsoring</label>
+        </div>
+      </fieldset>
+      <div class="field"><label for="sNote">Anything else? <span style="font-weight:400;color:var(--muted)">(optional)</span></label><textarea id="sNote" name="note" rows="3"></textarea></div>
+      <button type="submit" class="btn btn-primary">Sign me up</button>
+      <div class="form-msg" id="formMsg" role="status"></div>
+    </form>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">Questions</div>
+      <h2>Good to know</h2>
+    </div>
+    <div class="faq">
+      <details><summary>Is my donation tax-deductible?<span class="pm" aria-hidden="true">+</span></summary><p>Donations are made through our fiscal sponsor, a registered 501(c)(3) public charity, so gifts are tax-deductible to the extent allowed by law. You'll receive a receipt by email.</p></details>
+      <details><summary>How do you protect the privacy of the kids you help?<span class="pm" aria-hidden="true">+</span></summary><p>We never meet foster children directly or collect their information. Caseworkers share anonymous wish lists using first names or ages only, and they deliver everything we pack.</p></details>
+      <details><summary>Who oversees the money?<span class="pm" aria-hidden="true">+</span></summary><p>Our student treasurer keeps the books, our faculty advisor approves every purchase, and we publish a full report each semester.</p></details>
+      <details><summary>Can students from other schools join?<span class="pm" aria-hidden="true">+</span></summary><p>Yes. We opened a chapter at Lincoln High in 2026, and we'll help any student start one at their school. Sign up above and pick "High school student".</p></details>
+      <details><summary>Can my business sponsor an event?<span class="pm" aria-hidden="true">+</span></summary><p>We'd love that. Sponsors can donate supplies, host a give-back night or match donations during a drive. Use the sign-up form and choose "Local business".</p></details>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div>
+        <a class="brand" href="#top" style="margin-bottom:12px;display:flex">
+          <svg width="30" height="30" viewBox="0 0 34 34" aria-hidden="true"><circle cx="17" cy="17" r="15" fill="none" stroke="var(--cobalt)" stroke-width="3"/><path d="M7 20c4-8 9 2 13-5s6-3 7 0" fill="none" stroke="var(--thread)" stroke-width="3" stroke-linecap="round" stroke-dasharray="4 3.5"/></svg>
+          <span>Common Thread</span>
+        </a>
+        <p style="max-width:42ch">A student-led nonprofit serving kids in foster care and nursing-home residents in our county.</p>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <a href="#programs">Programs</a><a href="#impact">Our numbers</a><a href="#milestones">Milestones</a><a href="#faq">FAQ</a>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <a href="mailto:hello@commonthreadstudents.org">hello@commonthreadstudents.org</a>
+        <span style="display:block;padding:3px 0">Westbrook High School, Room 204</span>
+        <a href="https://instagram.com">Instagram @commonthread.students</a>
+      </div>
+    </div>
+    <div class="fine"><span>© 2026 Common Thread Student Collective</span><span>Fiscally sponsored by a registered 501(c)(3) public charity</span></div>
+  </div>
+</footer>
+
+<div class="mobile-give" id="mobileGive"><a class="btn btn-primary" href="#donate">Donate to Common Thread</a></div>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal-box">
+    <h3 id="modalTitle">Thank you!</h3>
+    <div class="summary" id="modalSummary"></div>
+    <p id="modalText"></p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <a class="btn btn-primary" id="checkoutLink" href="#" style="flex:1">Continue to checkout</a>
+      <button class="btn btn-ghost" type="button" id="modalClose" style="flex:1">Back</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===== Settings: paste your real donation page link here (PayPal Giving Fund, Zeffy, Givebutter, Donorbox, etc.) ===== */
+const DONATE_URL = "";
+
+const money = n => "$" + Math.round(n).toLocaleString("en-US");
+const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* Preview notice */
+document.getElementById("closeNotice").addEventListener("click", () => document.getElementById("notice").remove());
+
+/* Mobile menu */
+const menuBtn = document.getElementById("menuBtn"), links = document.getElementById("links");
+menuBtn.addEventListener("click", () => {
+  const open = links.classList.toggle("open");
+  menuBtn.setAttribute("aria-expanded", open);
+});
+links.querySelectorAll("a").forEach(a => a.addEventListener("click", () => { links.classList.remove("open"); menuBtn.setAttribute("aria-expanded", false); }));
+
+/* Count-up (numbers are already correct at rest; this just animates them on load) */
+if (!reduce) {
+  document.querySelectorAll("[data-count]").forEach(el => {
+    const end = +el.dataset.count, pre = el.dataset.prefix || "", t0 = performance.now(), dur = 1300;
+    const step = t => {
+      const p = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - p, 3);
+      el.textContent = pre + Math.round(end * e).toLocaleString("en-US");
+      if (p < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  });
+}
+
+/* Tabs */
+const tabs = [...document.querySelectorAll('[role="tab"]')];
+function selectTab(tab) {
+  tabs.forEach(t => {
+    const on = t === tab;
+    t.setAttribute("aria-selected", on);
+    t.tabIndex = on ? 0 : -1;
+    document.getElementById(t.getAttribute("aria-controls")).hidden = !on;
+  });
+}
+tabs.forEach((t, i) => {
+  t.addEventListener("click", () => selectTab(t));
+  t.addEventListener("keydown", e => {
+    if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+      const n = tabs[(i + (e.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length];
+      selectTab(n); n.focus();
+    }
+  });
+});
+
+/* Funds-by-year chart (single series) */
+const years = [
+  { y: "2023–24", v: 2150, ev: 5, note: "First year: bake sales and a holiday drive" },
+  { y: "2024–25", v: 4980, ev: 8, note: "Backpack drive and Valentine's cards" },
+  { y: "2025–26", v: 6420, ev: 8, note: "Biggest year so far, including the 5K" },
+  { y: "2026–27", v: 1310, ev: 3, note: "So far this year, through Nov 13", partial: true }
+];
+(function drawChart() {
+  const W = 560, H = 290, m = { t: 28, r: 8, b: 34, l: 52 };
+  const iw = W - m.l - m.r, ih = H - m.t - m.b, max = 8000;
+  const x = i => m.l + (iw / years.length) * i, bw = Math.min(70, iw / years.length * .52);
+  const yv = v => m.t + ih - (v / max) * ih;
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Bar chart of money raised by school year: ${years.map(d => d.y + " " + money(d.v)).join(", ")}">
+  <defs><pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="var(--cobalt-soft)"/><rect width="2.4" height="6" fill="var(--cobalt)"/></pattern></defs><g class="grid">`;
+  for (let v = 0; v <= max; v += 2000) s += `<line x1="${m.l}" x2="${W - m.r}" y1="${yv(v)}" y2="${yv(v)}"/>`;
+  s += `</g><g class="axis">`;
+  for (let v = 0; v <= max; v += 2000) s += `<text x="${m.l - 10}" y="${yv(v) + 4}" text-anchor="end">${v === 0 ? "$0" : "$" + v / 1000 + "k"}</text>`;
+  years.forEach((d, i) => { const cx = x(i) + iw / years.length / 2; s += `<text x="${cx}" y="${H - 10}" text-anchor="middle">${d.y}</text>`; });
+  s += `</g>`;
+  years.forEach((d, i) => {
+    const cx = x(i) + iw / years.length / 2, top = yv(d.v), h = m.t + ih - top, r = 4;
+    const path = `M${cx - bw / 2},${m.t + ih} V${top + r} Q${cx - bw / 2},${top} ${cx - bw / 2 + r},${top} H${cx + bw / 2 - r} Q${cx + bw / 2},${top} ${cx + bw / 2},${top + r} V${m.t + ih} Z`;
+    s += `<path class="b${d.partial ? " partial" : ""}" data-i="${i}" d="${path}"/>`;
+    s += `<text class="val" x="${cx}" y="${top - 8}" text-anchor="middle">${money(d.v)}</text>`;
+    s += `<rect class="hit" data-i="${i}" x="${x(i)}" y="${m.t}" width="${iw / years.length}" height="${ih}" tabindex="0" aria-label="${d.y}: ${money(d.v)}"/>`;
+  });
+  s += `</svg>`;
+  const chart = document.getElementById("chart"), tip = document.getElementById("tip");
+  chart.insertAdjacentHTML("beforeend", s);
+  const svg = chart.querySelector("svg");
+  const show = i => {
+    const d = years[i];
+    chart.classList.add("hovering");
+    chart.querySelectorAll(".b").forEach(b => b.classList.toggle("on", +b.dataset.i === i));
+    tip.innerHTML = `<b>${d.y}: ${money(d.v)}</b><br>${d.ev} events · ${d.note}`;
+    const sc = svg.getBoundingClientRect().width / W;
+    const cx = (x(i) + iw / years.length / 2) * sc;
+    tip.style.left = Math.max(110, Math.min(svg.getBoundingClientRect().width - 110, cx)) + "px";
+    tip.style.top = (yv(d.v) * sc - 30) + "px";
+    tip.classList.add("show");
+  };
+  const hide = () => { chart.classList.remove("hovering"); tip.classList.remove("show"); };
+  chart.querySelectorAll(".hit").forEach(h => {
+    const i = +h.dataset.i;
+    h.addEventListener("mouseenter", () => show(i));
+    h.addEventListener("focus", () => show(i));
+    h.addEventListener("click", () => show(i));
+    h.addEventListener("blur", hide);
+  });
+  svg.addEventListener("mouseleave", hide);
+  document.getElementById("tbody").innerHTML = years.map(d => `<tr><td>${d.y}${d.partial ? " (so far)" : ""}</td><td>${d.ev}</td><td>${money(d.v)}</td></tr>`).join("") +
+    `<tr><th>Total</th><th>${years.reduce((a, d) => a + d.ev, 0)}</th><th>${money(years.reduce((a, d) => a + d.v, 0))}</th></tr>`;
+})();
+const tableBtn = document.getElementById("tableBtn"), table = document.getElementById("dataTable");
+tableBtn.addEventListener("click", () => {
+  table.hidden = !table.hidden;
+  tableBtn.setAttribute("aria-expanded", !table.hidden);
+  tableBtn.textContent = table.hidden ? "Show as table" : "Hide table";
+});
+
+/* Uses of funds */
+const uses = [
+  { k: "Comfort kits for kids in foster care", v: 6250 },
+  { k: "Holiday and birthday gifts", v: 2980 },
+  { k: "Back-to-school backpacks", v: 2040 },
+  { k: "Nursing-home visit supplies", v: 1720 },
+  { k: "Event costs (permits, printing)", v: 720 },
+  { k: "Saved for the Holiday Drive", v: 1150 }
+];
+const usesTotal = uses.reduce((a, u) => a + u.v, 0);
+document.getElementById("uses").innerHTML = uses.map(u => {
+  const pct = u.v / usesTotal * 100;
+  return `<li><div class="row"><span style="color:var(--ink)">${u.k}</span><b>${money(u.v)} <span>${pct.toFixed(0)}%</span></b></div><div class="track"><i style="--w:${(u.v / uses[0].v * 100).toFixed(1)}%"></i></div></li>`;
+}).join("");
+
+/* Timeline filter */
+document.querySelectorAll(".chip").forEach(c => c.addEventListener("click", () => {
+  document.querySelectorAll(".chip").forEach(x => x.setAttribute("aria-pressed", x === c));
+  const f = c.dataset.f;
+  document.querySelectorAll(".ev").forEach(ev => ev.hidden = f !== "all" && !ev.classList.contains(f));
+}));
+
+/* Donate */
+const state = { amt: 50, freq: "once", fund: "general" };
+const fundSel = document.getElementById("fund"), custom = document.getElementById("customAmt");
+const amtBtns = [...document.querySelectorAll(".amt")];
+const fundNames = { general: "Where it's needed most", holiday: "Holiday Gift Drive 2026", foster: "Kids in foster care", elder: "Nursing-home visits" };
+function impactText(a, fund) {
+  const kits = Math.floor(a / 15), packs = Math.floor(a / 25), visits = Math.floor(a / 40), gifts = Math.floor(a / 25);
+  const plural = (n, w) => n + " " + w + (n === 1 ? "" : "s");
+  if (a < 1) return ["Choose an amount to see your impact.", ""];
+  if (fund === "elder") return visits >= 1
+    ? [`${money(a)} covers ${plural(visits, "nursing-home visit day")}.`, "Games, snacks, craft supplies and large-print puzzle books for residents."]
+    : [`${money(a)} buys handmade-card supplies for a whole facility.`, "Cardstock, markers and stamps for about 50 cards."];
+  if (fund === "holiday") return gifts >= 1
+    ? [`${money(a)} wraps up ${plural(gifts, "holiday gift")} for kids in foster care.`, "Each gift comes with a fleece blanket and a card from a student."]
+    : [`${money(a)} buys a fleece blanket for a child's holiday gift.`, ""];
+  if (fund === "foster" && packs >= 1 && a % 25 === 0 && a % 15 !== 0) return [`${money(a)} fills ${plural(packs, "backpack")} with school supplies.`, "Grade-specific supplies, delivered every August."];
+  return kits >= 1
+    ? [`${money(a)} provides ${plural(kits, "comfort kit")} for kids entering foster care.`, "Every kit includes a duffel bag, blanket, pajamas and a handwritten note."]
+    : [`${money(a)} buys a journal and toiletries for a comfort kit.`, "Small gifts add up: 40% of our donors give under $15."];
+}
+function render() {
+  const [big, small] = impactText(state.amt, state.fund);
+  const per = state.freq === "monthly" ? "every month" : "";
+  document.getElementById("impactBig").textContent = state.freq === "monthly" && state.amt >= 1 ? big.replace(/\.$/, " every month.") : big;
+  document.getElementById("impactSmall").textContent = small;
+  document.getElementById("giveBtn").textContent = state.amt >= 1 ? `Donate ${money(state.amt)}${state.freq === "monthly" ? " / month" : ""}` : "Choose an amount";
+  document.getElementById("freqLabel").textContent = state.freq === "monthly" ? "per month" : "one time";
+}
+amtBtns.forEach(b => b.addEventListener("click", () => {
+  amtBtns.forEach(x => x.setAttribute("aria-pressed", x === b));
+  custom.value = ""; state.amt = +b.dataset.amt; render();
+}));
+custom.addEventListener("input", () => {
+  const v = parseFloat(custom.value);
+  amtBtns.forEach(x => x.setAttribute("aria-pressed", false));
+  state.amt = isFinite(v) && v > 0 ? Math.round(v) : 0; render();
+});
+document.querySelectorAll("[data-freq]").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll("[data-freq]").forEach(x => x.setAttribute("aria-pressed", x === b));
+  state.freq = b.dataset.freq; render();
+}));
+fundSel.addEventListener("change", () => { state.fund = fundSel.value; render(); });
+document.querySelectorAll("[data-fund]").forEach(a => a.addEventListener("click", () => { fundSel.value = a.dataset.fund; state.fund = a.dataset.fund; render(); }));
+const honor = document.getElementById("honor");
+honor.addEventListener("change", () => document.getElementById("honorField").hidden = !honor.checked);
+
+const modal = document.getElementById("modal");
+document.getElementById("giveForm").addEventListener("submit", e => {
+  e.preventDefault();
+  if (state.amt < 1) { custom.focus(); return; }
+  const hn = honor.checked && document.getElementById("honorName").value.trim();
+  document.getElementById("modalSummary").innerHTML =
+    `<div><span>Amount</span><b>${money(state.amt)}${state.freq === "monthly" ? " / month" : ""}</b></div>
+     <div><span>Fund</span><b>${fundNames[state.fund]}</b></div>` +
+    (hn ? `<div><span>In honor of</span><b></b></div>` : "");
+  if (hn) document.querySelector("#modalSummary div:last-child b").textContent = hn;
+  const link = document.getElementById("checkoutLink");
+  if (DONATE_URL) {
+    document.getElementById("modalText").textContent = "You'll finish your gift on our secure donation page. Payment details are handled there, never on this site.";
+    link.href = DONATE_URL; link.style.display = "";
+    link.target = "_blank"; link.rel = "noopener";
+  } else {
+    document.getElementById("modalText").textContent = "Online checkout opens soon. In the meantime, email hello@commonthreadstudents.org and we'll help you give.";
+    link.style.display = "none";
+  }
+  modal.classList.add("open");
+  document.getElementById("modalClose").focus();
+});
+const closeModal = () => modal.classList.remove("open");
+document.getElementById("modalClose").addEventListener("click", closeModal);
+modal.addEventListener("click", e => { if (e.target === modal) closeModal(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+
+/* Volunteer sign-up */
+document.getElementById("signup").addEventListener("submit", e => {
+  e.preventDefault();
+  const name = document.getElementById("sName"), email = document.getElementById("sEmail");
+  const nOk = name.value.trim().length > 1, eOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim());
+  document.getElementById("f-name").classList.toggle("bad", !nOk);
+  document.getElementById("f-email").classList.toggle("bad", !eOk);
+  if (!nOk) return name.focus();
+  if (!eOk) return email.focus();
+  const msg = document.getElementById("formMsg");
+  msg.textContent = `Thanks, ${name.value.trim().split(" ")[0]}! Sign-ups go live soon. Until then, come to our Tuesday meeting or email hello@commonthreadstudents.org.`;
+  msg.classList.add("show");
+});
+
+/* Hide floating donate button while the donate section is on screen */
+const mg = document.getElementById("mobileGive");
+if ("IntersectionObserver" in window) {
+  new IntersectionObserver(([en]) => mg.classList.toggle("hide", en.isIntersecting), { threshold: .15 })
+    .observe(document.getElementById("donate"));
+}
+render();
+</script>
+</body>
+</html>
